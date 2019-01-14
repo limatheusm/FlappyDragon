@@ -12,9 +12,11 @@ import GameplayKit
 class GameScene: SKScene {
     
     var floor: SKSpriteNode!
+    var gameArea: CGFloat = 410.0
     
     override func didMove(to view: SKView) {
         addBackground()
+        addFloor()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -38,6 +40,7 @@ extension GameScene {
     func addFloor() {
         floor = SKSpriteNode(imageNamed: "floor")
         floor.zPosition = 2
+        floor.position = CGPoint(x: floor.size.width / 2, y: size.height - gameArea - floor.size.height / 2)
         addChild(floor)
     }
 }
