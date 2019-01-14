@@ -28,6 +28,8 @@ class GameScene: SKScene {
     var playerCategory: UInt32 = 1
     var enemyCategory: UInt32 = 2
     var scoreCategory: UInt32 = 4
+    var spawnEnemiesTimer: Timer!
+    weak var gameViewController: GameViewController?
     
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
@@ -47,6 +49,11 @@ class GameScene: SKScene {
             } else {
                 player.physicsBody?.velocity = CGVector.zero
                 player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: flyForce))
+            }
+        } else {
+            if restart {
+                restart = false
+                gameViewController?.presentScene()
             }
         }
     }
@@ -75,7 +82,7 @@ class GameScene: SKScene {
         
         gameStarted = true
         
-        Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { (timer) in
+        spawnEnemiesTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { (timer) in
             self.spawnEnemies()
         }
     }
@@ -130,6 +137,35 @@ class GameScene: SKScene {
         addChild(enemyTop)
         addChild(enemyBottom)
         addChild(laser)
+    }
+    
+    func gameOver() {
+        spawnEnemiesTimer.invalidate()
+        
+        /* Stop all actions */
+        for node in self.children {
+            node.removeAllActions()
+        }
+        
+        /* Freeze player */
+        player.zRotation = 0
+        player.texture = SKTexture(imageNamed: "playerDead")
+        player.physicsBody?.isDynamic = false
+        
+        gameFinished = true
+        gameStarted = false
+        
+        Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { (timer) in
+            let gameOverLabel = SKLabelNode(fontNamed: "Chalkduster")
+            gameOverLabel.fontColor = .red
+            gameOverLabel.fontSize = 40
+            gameOverLabel.text = "Game Over"
+            gameOverLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+            gameOverLabel.zPosition = 5
+            
+            self.addChild(gameOverLabel)
+            self.restart = true
+        }
     }
 }
 
@@ -243,7 +279,7 @@ extension GameScene: SKPhysicsContactDelegate {
                 scoreLabel.text = "\(score)"
             }
             else if contact.bodyA.categoryBitMask == enemyCategory || contact.bodyB.categoryBitMask == enemyCategory {
-                
+                gameOver()
             }
         }
     }
