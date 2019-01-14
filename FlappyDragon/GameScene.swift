@@ -9,6 +9,8 @@
 import SpriteKit
 import GameplayKit
 
+// TODO: Refactor to MVC Pattern
+
 class GameScene: SKScene {
     
     var floor: SKSpriteNode!
@@ -81,6 +83,22 @@ extension GameScene {
         floor.position = CGPoint(x: floor.size.width / 2, y: size.height - gameArea - floor.size.height / 2)
         
         addChild(floor)
+        
+        let invisibleFloor = SKNode()
+        invisibleFloor.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 1))
+        invisibleFloor.physicsBody?.isDynamic = false
+        invisibleFloor.position = CGPoint(x: size.width / 2, y: size.height - gameArea)
+        invisibleFloor.zPosition = 2
+        
+        addChild(invisibleFloor)
+        
+        let invisibleRoof = SKNode()
+        invisibleRoof.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 1))
+        invisibleRoof.physicsBody?.isDynamic = false
+        invisibleRoof.position = CGPoint(x: size.width / 2, y: size.height)
+        invisibleRoof.zPosition = 2
+        
+        addChild(invisibleRoof)
     }
     
     func addIntro() {
