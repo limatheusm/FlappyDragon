@@ -9,10 +9,11 @@
 import UIKit
 import SpriteKit
 import GameplayKit
-
-var stage: SKView!
+import AVFoundation
 
 class GameViewController: UIViewController {
+    var stage: SKView!
+    var musicPlayer: AVAudioPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,20 @@ class GameViewController: UIViewController {
         stage.ignoresSiblingOrder = true
         
         presentScene()
+        playMusic()
+    }
+    
+    func playMusic() {
+        if let musicURL = Bundle.main.url(forResource: "music", withExtension: "m4a") {
+            do {
+                musicPlayer = try AVAudioPlayer(contentsOf: musicURL)
+                musicPlayer.numberOfLoops = -1
+                musicPlayer.volume = 0.3
+                musicPlayer.play()
+            } catch _ {
+                
+            }
+        }
     }
     
     func presentScene() {
