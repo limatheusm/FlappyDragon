@@ -12,6 +12,7 @@ import GameplayKit
 class GameScene: SKScene {
     
     var floor: SKSpriteNode!
+    var player: SKSpriteNode!
     var intro: SKSpriteNode!
     var gameArea: CGFloat = 410.0
     
@@ -19,6 +20,7 @@ class GameScene: SKScene {
         addBackground()
         addFloor()
         addIntro()
+        addPlayer()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -51,5 +53,25 @@ extension GameScene {
         intro.zPosition = 3
         intro.position = CGPoint(x: size.width / 2, y: size.height - 210)
         addChild(intro)
+    }
+    
+    func addPlayer() {
+        /* Create Node */
+        player = SKSpriteNode(imageNamed: "player1")
+        player.zPosition = 4
+        player.position = CGPoint(x: 60, y: size.height - gameArea / 2)
+        
+        /* Create textures */
+        var playerTextures = [SKTexture]()
+        for i in 1...4 {
+            playerTextures.append(SKTexture(imageNamed: "player\(i)"))
+        }
+        
+        /* Animate dragon */
+        let animationAction = SKAction.animate(with: playerTextures, timePerFrame: 0.09)
+        let repeatAction = SKAction.repeatForever(animationAction)
+        player.run(repeatAction)
+        
+        addChild(player)
     }
 }
