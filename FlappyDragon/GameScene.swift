@@ -16,6 +16,12 @@ class GameScene: SKScene {
     var intro: SKSpriteNode!
     var gameArea: CGFloat = 410.0
     var velocity: Double = 100.0
+    var gameFinished = false
+    var gameStarted = false
+    var restart = false
+    var scoreLabel: SKLabelNode!
+    var score: Int = 0
+    var flyForce: CGFloat = 30.0
     
     override func didMove(to view: SKView) {
         addBackground()
@@ -27,11 +33,34 @@ class GameScene: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        if !gameFinished {
+            if !gameStarted {
+                startGame()
+            } else {
+                player.physicsBody?.velocity = CGVector.zero
+                player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: flyForce))
+            }
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        if gameStarted {
+            let yVelocity = player.physicsBody!.velocity.dy * 0.001 as CGFloat
+            player.zRotation = yVelocity
+        }
+    }
+    
+    func startGame() {
+        intro.removeFromParent()
+        addScore()
+        
+        player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width / 2 - 10)
+        player.physicsBody?.isDynamic = true
+        player.physicsBody?.allowsRotation = true
+        player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: flyForce))
+        
+        gameStarted = true
     }
 }
 
@@ -42,6 +71,7 @@ extension GameScene {
         /* Center */
         background.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
         background.zPosition = 0
+        
         addChild(background)
     }
     
@@ -49,6 +79,7 @@ extension GameScene {
         floor = SKSpriteNode(imageNamed: "floor")
         floor.zPosition = 2
         floor.position = CGPoint(x: floor.size.width / 2, y: size.height - gameArea - floor.size.height / 2)
+        
         addChild(floor)
     }
     
@@ -56,6 +87,7 @@ extension GameScene {
         intro = SKSpriteNode(imageNamed: "intro")
         intro.zPosition = 3
         intro.position = CGPoint(x: size.width / 2, y: size.height - 210)
+        
         addChild(intro)
     }
     
@@ -63,7 +95,19 @@ extension GameScene {
         player = SKSpriteNode(imageNamed: "player1")
         player.zPosition = 4
         player.position = CGPoint(x: 60, y: size.height - gameArea / 2)
+        
         addChild(player)
+    }
+    
+    func addScore() {
+        scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+        scoreLabel.fontSize = 94
+        scoreLabel.text = "\(score)"
+        scoreLabel.zPosition = 5
+        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height - 100)
+        scoreLabel.alpha = 0.8
+        
+        addChild(scoreLabel)
     }
 }
 
